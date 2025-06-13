@@ -1,7 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+} from "recharts";
 import {
   Card,
   CardContent,
@@ -15,7 +21,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-// Define types for the API data
+// Define types
 type PricePoint = [number, number];
 
 interface ChartDataPoint {
@@ -23,7 +29,6 @@ interface ChartDataPoint {
   price: number;
 }
 
-// Initial time range is set to "1H"
 const initialRange = "1H";
 
 const chartConfig = {
@@ -35,15 +40,13 @@ const chartConfig = {
 
 export default function Component() {
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedRange, setSelectedRange] = useState<string>(initialRange);
-  const [selectedCoin, setSelectedCoin] = useState<string>("bitcoin"); // Add state for selected coin
+  const [selectedRange, setSelectedRange] = useState(initialRange);
+  const [selectedCoin, setSelectedCoin] = useState("bitcoin");
 
-  // Function to generate the API URL based on the selected range and coin
   const getAPIURL = (range: string, coin: string) => {
-    const coinId =
-      coin === "bitcoin" ? "bitcoin" : coin === "litecoin" ? "litecoin" : "cardano";
+    const coinId = coin === "bitcoin" ? "bitcoin" : coin === "litecoin" ? "litecoin" : "cardano";
     switch (range) {
       case "1H":
         return `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=1`;
@@ -60,33 +63,28 @@ export default function Component() {
     }
   };
 
-  // Fetch data based on the selected time range and coin
   useEffect(() => {
     const fetchChartData = async () => {
       try {
         const response = await fetch(getAPIURL(selectedRange, selectedCoin));
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
+        if (!response.ok) throw new Error("Failed to fetch data");
         const data = await response.json();
 
-        // Map data.prices (array of PricePoint tuples) to ChartDataPoint[]
-        const limitedData: ChartDataPoint[] = data.prices.slice(0, 15).map(
+        // Use entire dataset (no slice)
+        const chartDataFormatted: ChartDataPoint[] = data.prices.map(
           (price: PricePoint) => ({
-            time: new Date(price[0]).toLocaleTimeString(),
+            time: new Date(price[0]).toLocaleTimeString([], {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
             price: price[1],
           })
         );
 
-        setChartData(limitedData);
+        setChartData(chartDataFormatted);
         setLoading(false);
-        console.log(limitedData);
       } catch (err: unknown) {
-        if (err instanceof Error) {
-          setError(err.message);
-        } else {
-          setError("Unknown error");
-        }
+        setError(err instanceof Error ? err.message : "Unknown error");
         setLoading(false);
       }
     };
@@ -94,121 +92,92 @@ export default function Component() {
     fetchChartData();
   }, [selectedRange, selectedCoin]);
 
-  if (loading) {
-    return <p>Loading...</p>;
-  }
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
 
-  if (error) {
-    return <p>Error: {error}</p>;
-  }
-
-  // Determine the min and max prices for Y-Axis ticks
   const prices = chartData.map((item) => item.price);
   const minPrice = Math.min(...prices);
   const maxPrice = Math.max(...prices);
-  const tickInterval = (maxPrice - minPrice) / 5; // Adjust to your preferred number of ticks
+  const tickInterval = (maxPrice - minPrice) / 5;
 
-  const yAxisTicks = [
-    minPrice,
-    minPrice + tickInterval,
-    minPrice + 2 * tickInterval,
-    minPrice + 3 * tickInterval,
-    minPrice + 4 * tickInterval,
-    maxPrice,
-  ];
+  const yAxisTicks = Array.from({ length: 6 }, (_, i) =>
+    parseFloat((minPrice + i * tickInterval).toFixed(2))
+  );
 
   return (
-    <Card style={{ height: "400px" }} className="w-full max-w-full overflow-hidden">
+    <Card className="w-full max-w-full overflow-hidden" style={{ height: "400px" }}>
       <CardHeader>
         <CardTitle>
-          <div className="flex flex-wrap">
-            <div>
-              <select
-                className="p-2 bg-black text-white rounded-[30px] border-none"
-                value={selectedCoin}
-                onChange={(e) => setSelectedCoin(e.target.value)}
-                style={{ padding: "10px" }}
-              >
-                <option value="bitcoin">BTC / Bitcoin</option>
-                <option value="litecoin">LTC / Litecoin</option>
-                <option value="cardano">ADA / Cardano</option>
-              </select>
-            </div>
-            <p className="ml-[50px] p-[20px] font-normal text-[18px]">
-              ${chartData.length ? chartData[chartData.length - 1].price.toFixed(2) : "Loading"}
+          <div className="flex flex-col gap-4 lg:flex-row sm:items-center sm:justify-between w-full">
+            <select
+              className="bg-black text-white rounded-full px-4 py-2 text-sm sm:text-base focus:outline-none border border-white/20"
+              value={selectedCoin}
+              onChange={(e) => setSelectedCoin(e.target.value)}
+            >
+              <option value="bitcoin">BTC / Bitcoin</option>
+              <option value="litecoin">LTC / Litecoin</option>
+              <option value="cardano">ADA / Cardano</option>
+            </select>
+
+            <p className="text-lg sm:text-xl cusm:ml-[20px] font-semibold text-white">
+              $
+              {chartData.length
+                ? chartData[chartData.length - 1].price.toFixed(2)
+                : "Loading"}
             </p>
-            <div className="p-[3px] bg-black rounded-[25px] w-[232px] xlg:ml-[280px] cusm:ml-[70px] h-[52px]">
-              <button
-                className={`h-[40px] rounded-[40px] hover:bg-white hover:text-black p-[10px] m-[3px] text-[15px] ${
-                  selectedRange === "1H" ? "bg-white text-black" : ""
-                }`}
-                onClick={() => setSelectedRange("1H")}
-              >
-                1H
-              </button>
-              <button
-                className={`h-[40px] rounded-[40px] hover:bg-white hover:text-black p-[10px] m-[3px] text-[15px] ${
-                  selectedRange === "3H" ? "bg-white text-black" : ""
-                }`}
-                onClick={() => setSelectedRange("3H")}
-              >
-                3H
-              </button>
-              <button
-                className={`h-[40px] rounded-[40px] hover:bg-white hover:text-black p-[10px] m-[3px] text-[15px] ${
-                  selectedRange === "1D" ? "bg-white text-black" : ""
-                }`}
-                onClick={() => setSelectedRange("1D")}
-              >
-                1D
-              </button>
-              <button
-                className={`h-[40px] rounded-[40px] hover:bg-white hover:text-black p-[10px] m-[3px] text-[15px] ${
-                  selectedRange === "3M" ? "bg-white text-black" : ""
-                }`}
-                onClick={() => setSelectedRange("3M")}
-              >
-                3M
-              </button>
-              <button
-                className={`h-[40px] rounded-[40px] hover:bg-white hover:text-black p-[10px] m-[3px] text-[15px] ${
-                  selectedRange === "6M" ? "bg-white text-black" : ""
-                }`}
-                onClick={() => setSelectedRange("6M")}
-              >
-                6M
-              </button>
+
+            <div className="flex flex-wrap justify-center bg-black rounded-full px-2 py-1">
+              {["1H", "3H", "1D", "3M", "6M"].map((range) => (
+                <button
+                  key={range}
+                  className={`rounded-full px-4 py-1.5 text-sm font-medium m-1 transition-colors ${
+                    selectedRange === range
+                      ? "bg-white text-black"
+                      : "text-white hover:bg-white hover:text-black"
+                  }`}
+                  onClick={() => setSelectedRange(range)}
+                >
+                  {range}
+                </button>
+              ))}
             </div>
           </div>
         </CardTitle>
       </CardHeader>
-      <CardContent className="ml-[0px]">
-        <ChartContainer
-          config={chartConfig}
-          style={{ height: "300px", width: "100%", marginLeft: "0px" }}
-        >
-          <AreaChart data={chartData}>
-            <CartesianGrid vertical={false} />
+
+      <CardContent className="ml-0">
+        <ChartContainer config={chartConfig} style={{ height: "300px", width: "100%" }}>
+          <AreaChart
+            data={chartData}
+            margin={{ top: 20, right: 20, bottom: 20, left: 50 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
             <XAxis
               dataKey="time"
               tickLine={false}
-              axisLine={true}
-              tickMargin={1}
-              tickFormatter={(value) => value.slice(0, 5)}
+              axisLine
+              interval="preserveStartEnd"
+              minTickGap={15}
+              tickFormatter={(value) => value}
             />
             <YAxis
-              ticks={yAxisTicks} // Use dynamic ticks based on API data
+              ticks={yAxisTicks}
               tickLine={false}
-              axisLine={true}
-              tickFormatter={(value) => `$${value.toFixed(2)}`} // Format ticks with $ sign
+              axisLine
+              tickFormatter={(value) => `$${value.toFixed(2)}`}
             />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
+            <ChartTooltip
+              cursor={false}
+              content={<ChartTooltipContent indicator="line" />}
+            />
             <Area
               dataKey="price"
-              type="natural"
+              type="linear" // sharper zigzag
+              stroke="var(--color-desktop)"
               fill="var(--color-desktop)"
               fillOpacity={0.4}
-              stroke="var(--color-desktop)"
+              strokeWidth={2}
+              connectNulls
             />
           </AreaChart>
         </ChartContainer>

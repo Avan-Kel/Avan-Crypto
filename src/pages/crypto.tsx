@@ -224,70 +224,67 @@ export default function CyptoHomePage() {
   return (
     <div className="dark min-h-screen w-full overflow-x-hidden bg-black text-white">
       {/* First parent divider starts here */}
-      <div className="flex sm:flex-nowrap cusm:flex-wrap">
-        <div className="m-[5px] flex items-center mt-[1px] cusm:block lg:flex">
-          <span>
+      <div className="dark  w-full overflow-x-hidden bg-black text-white px-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+          {/* Logo */}
+          <div className="flex items-center gap-2">
             <Image
               src="/images.png"
               alt="BTC logo"
               width={30}
               height={30}
-              className="rounded-full mt-[5px]"
+              className="rounded-full"
             />
-          </span>
-          <span className="text-[15px] font-semibold mt-[10px] cusm:ml-[5px] md:ml-[0px] lg:ml-[5px] lg:mb-[7px] font-verdana">
-            PromX
-          </span>
+            <span className="text-[15px] font-semibold font-verdana">
+              PromX
+            </span>
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex flex-wrap justify-center bg-dark-gray border border-gray-500 rounded-full p-1 gap-2">
+            {["Home", "Trades", "Wallet", "Transactions"].map((item) => (
+              <button
+                key={item}
+                className="hover:bg-white hover:text-black rounded-full px-4 py-2 text-sm font-medium font-verdana"
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          {/* Tether Item */}
+          <NavigationMenu>
+            <NavigationMenuList>
+              <NavigationMenuItem className="flex items-center gap-2 text-sm font-verdana">
+                <Image
+                  src="/tetherimages-removebg-preview.png"
+                  alt="Tether logo"
+                  width={30}
+                  height={30}
+                  className="rounded-full"
+                />
+                Tether
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </NavigationMenu>
+
+          {/* Buttons Section */}
+          <div className="flex items-center gap-3 flex-wrap">
+            <button className="bg-yellow-500 text-black rounded-full font-semibold text-sm px-5 py-2 border border-white">
+              Connect Wallet
+            </button>
+
+            <button className="h-11 w-11 rounded-full bg-dark-gray flex items-center justify-center">
+              <IoMdNotificationsOutline className="text-xl" />
+            </button>
+
+            <Button variant="outline" className="h-11 px-4">
+              Profile
+            </Button>
+          </div>
         </div>
-
-        <div className="m-[10px] border border-gray-500 rounded-[30px] sm:ml-[10px] lg:ml-[80px] xl:ml-[200px] cusm:ml-[5px] cusm:flex  bg-dark-gray w-[300px] p-[2px] ">
-          <button className=" hover:bg-white hover:text-black rounded-[25px] p-[12px] text-[14px] font-medium font-verdana">
-            Home
-          </button>
-          <button className=" hover:bg-white hover:text-black rounded-[25px] p-[12px] text-[14px] font-medium font-verdana">
-            Trades
-          </button>
-          <button className=" hover:bg-white hover:text-black rounded-[25px] p-[12px] text-[14px] font-medium font-verdana">
-            Wallet
-          </button>
-          <button className=" hover:bg-white hover:text-black rounded-[25px] p-[12px] text-[14px] font-medium font-verdana">
-            Transactions
-          </button>
-        </div>
-
-        <NavigationMenu className="sm:ml-[10px] xl:ml-[150px] lg:ml-[80px] cusm:ml-[60px]">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              {/* <NavigationMenuTrigger> */}
-              <Image
-                src="/tetherimages-removebg-preview.png" // path relative to the public folder (without '/public')
-                alt="bolt logo"
-                width={30}
-                height={30}
-                className="rounded-[30px] font-[verdana]"
-              />
-              Tether
-              {/* </NavigationMenuTrigger> */}
-              <NavigationMenuContent></NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
-
-        <button className="sm:m-[10px] sm:ml-[10px] xl:ml-[70px] lg:ml-[30px] md:ml-[20px] cusm:ml-[13px] cusm:h-[40px] cusm:p-[0px] cusm:text-[13px] bg-yellow-500 text-black rounded-[30px] font-semibold font-[verdana] text-[13px] p-[10px] cusm:mt-[15px] border border-white">
-          Connect Wallet
-        </button>
-
-        <button className="m-[10px] sm:ml-[10px] xl:ml-[40px] lg:ml-[20px] md:p-[10px] lg:p-[10px] cusm:ml-[13px] h-[45px] w-[45px] rounded-[45px] bg-dark-gray pl-[11px]">
-          <IoMdNotificationsOutline className="text-[22px]" />
-        </button>
-
-        <Button
-          variant="outline"
-          className="m-[10px] ml-[40px] sm:ml-[10px] md:ml-[15px] lg:ml-[25px] xl:ml-[40px] cusm:ml-[3px] h-[45px]"
-        >
-          Profile
-        </Button>
       </div>
+
       {/* First parent divider ends here */}
 
       {/* Second parent divider starts here */}
