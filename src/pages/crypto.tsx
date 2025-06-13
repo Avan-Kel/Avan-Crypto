@@ -14,9 +14,9 @@ import { CiSearch } from "react-icons/ci";
 import { HiOutlineSwitchVertical } from "react-icons/hi";
 import { IoAlertCircleOutline } from "react-icons/io5";
 import { FaAngleUp, FaAngleDown } from "react-icons/fa";
+import { RxHamburgerMenu } from "react-icons/rx";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
@@ -224,66 +224,119 @@ export default function CyptoHomePage() {
   return (
     <div className="dark min-h-screen w-full overflow-x-hidden bg-black text-white">
       {/* First parent divider starts here */}
-      <div className="dark  w-full overflow-x-hidden bg-black text-white px-4">
-        <div className="flex flex-wrap items-center justify-between gap-4 py-4">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <Image
-              src="/images.png"
-              alt="BTC logo"
-              width={30}
-              height={30}
-              className="rounded-full"
-            />
-            <span className="text-[15px] font-semibold font-verdana">
-              PromX
-            </span>
-          </div>
+      <div className="dark w-full overflow-x-hidden bg-black text-white px-4">
+      {/* Top Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 py-4">
+        {/* Logo */}
+        <div className="flex items-center gap-2">
+          <Image
+            src="/images.png"
+            alt="BTC logo"
+            width={30}
+            height={30}
+            className="rounded-full"
+          />
+          <span className="text-[15px] font-semibold font-verdana">
+            PromX
+          </span>
+        </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex flex-wrap justify-center bg-dark-gray border border-gray-500 rounded-full p-1 gap-2">
+        {/* Hamburger (Mobile Only) */}
+        <button
+          className="lg:hidden text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          <RxHamburgerMenu className="text-2xl" />
+        </button>
+
+        {/* Desktop Nav (hidden on mobile) */}
+        <div className="hidden lg:flex flex-wrap justify-center bg-dark-gray border border-gray-500 rounded-full p-1 gap-2">
+          {["Home", "Trades", "Wallet", "Transactions"].map((item) => (
+            <button
+              key={item}
+              className="hover:bg-white hover:text-black rounded-full px-4 py-2 text-sm font-medium font-verdana"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+
+        {/* Tether (hidden on mobile) */}
+        <NavigationMenu className="hidden lg:flex">
+          <NavigationMenuList>
+            <NavigationMenuItem className="flex items-center gap-2 text-sm font-verdana">
+              <Image
+                src="/tetherimages-removebg-preview.png"
+                alt="Tether logo"
+                width={30}
+                height={30}
+                className="rounded-full"
+              />
+              Tether
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
+
+        {/* Right Action Buttons (hidden on mobile) */}
+        <div className="hidden lg:flex items-center gap-3 flex-wrap">
+          <button className="bg-yellow-500 text-black rounded-full font-semibold text-sm px-5 py-2 border border-white">
+            Connect Wallet
+          </button>
+
+          <button className="h-11 w-11 rounded-full bg-dark-gray flex items-center justify-center">
+            <IoMdNotificationsOutline className="text-xl" />
+          </button>
+
+          <Button variant="outline" className="h-11 px-4">
+            Profile
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile Dropdown Menu */}
+      {isOpen && (
+        <div className="flex flex-col gap-4 lg:hidden bg-[#111] p-4 rounded-md">
+          {/* Mobile Nav */}
+          <div className="flex flex-col gap-2">
             {["Home", "Trades", "Wallet", "Transactions"].map((item) => (
               <button
                 key={item}
-                className="hover:bg-white hover:text-black rounded-full px-4 py-2 text-sm font-medium font-verdana"
+                className="hover:bg-white hover:text-black rounded-md px-4 py-2 text-sm font-medium font-verdana text-left"
               >
                 {item}
               </button>
             ))}
           </div>
 
-          {/* Tether Item */}
-          <NavigationMenu>
-            <NavigationMenuList>
-              <NavigationMenuItem className="flex items-center gap-2 text-sm font-verdana">
-                <Image
-                  src="/tetherimages-removebg-preview.png"
-                  alt="Tether logo"
-                  width={30}
-                  height={30}
-                  className="rounded-full"
-                />
-                Tether
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
+          {/* Tether */}
+          <div className="flex items-center gap-2 text-sm font-verdana">
+            <Image
+              src="/tetherimages-removebg-preview.png"
+              alt="Tether logo"
+              width={30}
+              height={30}
+              className="rounded-full"
+            />
+            Tether
+          </div>
 
-          {/* Buttons Section */}
-          <div className="flex items-center gap-3 flex-wrap">
-            <button className="bg-yellow-500 text-black rounded-full font-semibold text-sm px-5 py-2 border border-white">
+          {/* Buttons */}
+          <div className="flex flex-col gap-3">
+            <button className="bg-yellow-500 text-black rounded-md font-semibold text-sm px-4 py-2 border border-white">
               Connect Wallet
             </button>
 
-            <button className="h-11 w-11 rounded-full bg-dark-gray flex items-center justify-center">
-              <IoMdNotificationsOutline className="text-xl" />
-            </button>
-
-            <Button variant="outline" className="h-11 px-4">
+            <Button variant="outline" className="h-11 w-full">
               Profile
             </Button>
+
+            <button className="h-11 w-full rounded-md bg-dark-gray flex items-center justify-center">
+              <IoMdNotificationsOutline className="text-xl" />
+            </button>
           </div>
         </div>
-      </div>
+      )}
+    </div>
 
       {/* First parent divider ends here */}
 

@@ -19,6 +19,7 @@ module.exports = {
         umlg: "770px",
         lg: "1024px", // Large screens (e.g., laptops)
         xlg: "1100px", // Large screens (e.g., laptops)
+        xxlg: '1180px',
         xl: "1280px", // Extra large screens (e.g., desktop)
         lg2: "1440px",
         "2xl": "1536px", // 2x Extra large screens (e.g., large desktop monitors)
